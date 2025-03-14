@@ -1,0 +1,147 @@
+                    Main.java
+package date1;
+
+import dates.ConsoleInput;
+
+public class Main {
+
+	public static void main(String[] args) 
+	{
+		System.out.println("Enter the Day:");
+		int day = ConsoleInput.getInteger();
+		System.out.println("Enter the Month:");
+        int month = ConsoleInput.getInteger();
+        System.out.println("Enter the Year:");
+        int year =ConsoleInput.getInteger();
+        
+        Calender objDate = new Calender();
+        if (day<1 || day>31 || month<1 || month>12 || year<1000 || year>9999)
+        {
+        	System.out.println("Invalid Date");
+        }
+        else
+        {
+        	objDate.setDate(day,month,year);
+        	System.out.println("Date: "+objDate.getDay() + "/" +objDate.getMonth() + "/" + objDate.getYear());
+        	int choice=0;
+        	do {
+        		System.out.println("Enter your choice");
+        		System.out.println("1.Add Days");
+        		System.out.println("2.Add Month");
+        		System.out.println("3.Add Year");
+        		System.out.println("4.Exit");
+        		choice=ConsoleInput.getInteger();
+        		switch (choice) {
+        		case 1:
+        			System.out.println("enter add date....");
+        			int day1= ConsoleInput.getInteger();
+        			Calender.addDays(day1, day, month, year);
+        	      	break;
+        		case 2:
+        			System.out.println("enter add month....");
+        			int month1= ConsoleInput.getInteger();
+        			Calender.addMonths(month1,day,month,year);
+        		break;
+        		case 3:
+        			System.out.println("enter add year....");
+        			int year1= ConsoleInput.getInteger();
+        			Calender.addYears(year1,day,month,year);
+        		break;
+        		case 4:
+        			System.out.println("Exited Successfully");
+        			break;
+        		}
+        	}while(choice!=4);
+        }
+	}
+}
+
+calender.java
+
+package date1;
+
+
+
+public class Calender {
+	int day;
+	int month;
+	int year;
+
+	public void setDate(int tmpday, int tmpmonth, int tmpyear) {
+		year = tmpyear;
+		month = tmpmonth;
+		day = tmpday;
+		if ((tmpyear % 4 == 0 && tmpyear % 100 != 0) || tmpyear % 400 == 0) {
+			if (tmpmonth == 2) {
+				if (tmpday < 1 || tmpday > 29)
+					
+					day = 1;
+				else
+					day = tmpday;
+			}
+		} else {
+			if (tmpmonth == 1 || tmpmonth == 3 || tmpmonth == 5 || tmpmonth == 7 || tmpmonth == 8 || tmpmonth == 10
+					|| tmpmonth == 12) {
+				if (tmpday < 1 || tmpday > 31)
+					day = 1;
+				else
+					day = tmpday;
+			} else if (tmpmonth == 4 || tmpmonth == 6 || tmpmonth == 9 || tmpmonth == 11) {
+				if (tmpday < 1 || tmpday > 30)
+					day = 1;
+				else
+					day = tmpday;
+			}
+		}
+	}
+
+	public static void addDays(int exDay, int tmpday, int tmpmonth, int tmpyear) {
+		int[] daysInMonth = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+		if ((tmpyear % 4 == 0 && tmpyear % 100 != 0) || (tmpyear % 400 == 0)) {
+			daysInMonth[1] = 29;
+		}
+		int totalDays = tmpday + exDay;
+		while(totalDays>daysInMonth[tmpmonth - 1]){
+			totalDays -= daysInMonth[tmpmonth - 1];
+			tmpmonth++;
+			
+			if(tmpmonth > 12) {
+				tmpmonth=1;
+				tmpyear++;
+			}
+		}
+	
+		System.out.println(totalDays + "/" + tmpmonth + "/" + tmpyear);
+	}
+
+	public static void addMonths(int exMonth, int tmpday, int tmpmonth, int tmpyear) {
+		int finalMonth = 0;
+		finalMonth = tmpmonth + exMonth;
+		if (finalMonth > 12) {
+			finalMonth = finalMonth - 12;
+			tmpyear++;
+		}
+		System.out.println(tmpday + "/" + finalMonth + "/" + tmpyear);
+		
+	}
+
+	public static void addYears(int exYear, int tmpday, int tmpmonth, int tmpyear) {
+		int finalYear = 0;
+		finalYear = tmpyear + exYear;
+
+		System.out.println(tmpday + "/" + tmpmonth + "/" + finalYear);
+	}
+
+	public int getDay() {
+		return day;
+	}
+
+	public int getMonth() {
+		return month;
+	}
+
+	public int getYear() {
+		return year;
+	}
+
+}
