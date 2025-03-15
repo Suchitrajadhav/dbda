@@ -1,0 +1,170 @@
+contact.java
+
+package com.dbda;
+
+public class Contact {
+
+	private String name;
+	private String phoneNumber;
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+	
+	public Contact(String name, String phoneNumber) {
+		super();
+		this.name = name;
+		this.phoneNumber = phoneNumber;
+	}
+	@Override
+	public String toString() {
+		return "Contact [name=" + name + ", phoneNumber=" + phoneNumber + "]";
+	}
+	
+	
+	
+
+}
+
+
+MainApp.java
+
+package com.dbda;
+
+import java.util.Scanner;
+
+public class MainApp {
+	public static void main(String[] args) throws ResourceNotFoundException {
+		Scanner sc=new Scanner(System.in);
+		Phonebook phonebook=new Phonebook();
+		while(true) {
+			System.out.println("\nPhonebook Menu: ");
+			System.out.println("1. Add a new contact ");
+			System.out.println("2. Display all contacts ");
+			System.out.println("3. Search Contact ");
+			System.out.println("4. Delete a contact ");
+			System.out.println("5. Exit ");
+			System.out.println("Enter your choice: ");
+			
+			int choice = sc.nextInt();
+			
+			switch(choice) {
+			case 1:
+			System.out.println("Enter name: ");
+			String name = sc.next();
+			System.out.println("Enter phone number: ");
+			String phoneNumber = sc.next();
+			phonebook.addContact(name,phoneNumber);
+			break;
+			
+			case 2:
+				phonebook.displayContacts();
+			break;
+			
+			case 3:
+				System.out.println("Enter name to search");
+				name=sc.next();
+				Contact searchContact=null;
+				searchContact = phonebook.searchContact(name);
+				System.out.println(searchContact);
+				break;
+			case 4:
+				System.out.println("Enter name to delete");
+				name=sc.next();
+				phonebook.deleteContact(name);
+			   break;
+			case 5:
+				System.exit(0);
+				return;
+		
+		}
+		
+	}
+	}
+}
+
+phonebook.java
+
+
+package com.dbda;
+
+import java.util.ArrayList;
+
+public class Phonebook {
+	private ArrayList<Contact> contacts=new ArrayList<>();
+
+	public Phonebook() {
+		contacts=new ArrayList<>();
+		// TODO Auto-generated constructor stub
+	}
+
+	public void addContact(String name,String phoneNumber) throws ResourceNotFoundException {
+		if (name==null) {
+			throw new ResourceNotFoundException("name cannot empty");
+		}
+		if (searchContact(name)!=null) {
+			throw new ResourceNotFoundException("already presennt");
+		}
+		if (phoneNumber==null || phoneNumber.length()!=10) {
+			throw new ResourceNotFoundException("pleasee enter valid number");
+		}
+		Contact newcontact=new Contact(name,phoneNumber);
+		contacts.add(newcontact);
+		System.out.println("contact added successfully");
+	}
+	
+	public void displayContacts() {
+		if (contacts.isEmpty()) {
+			System.out.println("Phonebook is empty.");
+		}
+		else {
+			for (Contact contacts:contacts) {
+				System.out.println(contacts);
+			}
+		}
+	}
+
+	public Contact searchContact(String name) {
+		for (Contact contacts:contacts) {
+			if (contacts.getName().equalsIgnoreCase(name)) {
+				return contacts;
+				//System.out.println(contact);
+			}
+		}
+		return null;
+	}
+	
+	
+	public void deleteContact(String name) throws ResourceNotFoundException{
+		
+	    Contact contactToRemove=searchContact(name);
+		if (contactToRemove != null) {
+			contacts.remove(contactToRemove);
+			System.out.println("Contact deleted successfully.");
+	}
+		
+	}
+
+}
+
+
+ResourceNotFoundException.java
+package com.dbda;
+
+public class ResourceNotFoundException extends Exception{
+
+	public ResourceNotFoundException(String message) {
+		super(message);
+		// TODO Auto-generated constructor stub
+	}
+
+}
+
