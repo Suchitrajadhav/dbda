@@ -1,0 +1,308 @@
+ResourceNotFoundException.java
+
+public class ResourceNotFoundException extends Exception {
+	 
+		 public ResourceNotFoundException(String message) {
+			 super(message);
+		 }
+}
+
+Book.java
+
+
+
+import java.io.Serializable;
+import java.time.LocalDate;
+
+public class Book implements  Serializable{
+	private String id;
+	private String title;
+	private String author;
+	private Category category;
+	private double price;
+    private int stock;
+    private LocalDate stockUpdateDate;
+    private String publisher;
+	private double discount;
+	
+	
+	public Book() {
+		super();
+		
+	}
+	public Book(String id, String title, String author, Category category, double price, int stock,
+			LocalDate stockUpdateDate, String publisher) {
+		super();
+		this.id = id;
+		this.title = title;
+		this.author = author;
+		this.category = category;
+		this.price = price;
+		this.stock = stock;
+		this.stockUpdateDate = stockUpdateDate;
+		this.publisher = publisher;
+		this.discount = discount;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public String getAuthor() {
+		return author;
+	}
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+	public Category getCategory() {
+		return category;
+	}
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+	public double getPrice() {
+		return price;
+	}
+	public void setPrice(double price) {
+		this.price = price;
+	}
+	public int getStock() {
+		return stock;
+	}
+	public void setStock(int stock) {
+		this.stock = stock;
+		this.stockUpdateDate=LocalDate.now();
+		}
+	public LocalDate getStockUpdateDate() {
+		return stockUpdateDate;
+	}
+	public void setStockUpdateDate(LocalDate stockUpdateDate) {
+		this.stockUpdateDate = stockUpdateDate;
+	}
+	public String getPublisher() {
+		return publisher;
+	}
+	public void setPublisher(String publisher) {
+		this.publisher = publisher;
+	}
+	public double getDiscount() {
+		return discount;
+	}
+	public void setDiscount(double discount) {
+		this.discount = discount;
+	}
+	@Override
+	public String toString() {
+		return "Book [id=" + id + ", title=" + title + ", author=" + author + ", category=" + category + ", price="
+				+ price + ", stock=" + stock + ", stockUpdateDate=" + stockUpdateDate + ", publisher=" + publisher
+				+ ", discount=" + discount + "]";
+	}
+	
+
+}
+
+BookStoreApp.java
+
+import java.time.LocalDate;
+import java.util.Scanner;
+
+public class BookStoreApp {
+    private static Category discountCategory;
+
+	public static void main(String[] args) {
+    	InventoryManager manager=new InventoryManager();
+    	Scanner sc=new Scanner(System.in);
+    	
+    	while(true) {
+    	System.out.println("1.add book ");
+    	 System.out.println("2.update stock of book");
+    	 System.out.println("3.set discount for all books of given category");
+    	 System.out.println("4.remove books that not in stock");
+    	 System.out.println("5.save inventory in file");
+    	 System.out.println("6.load inventory from filr");
+    	 System.out.println("7.display all books");
+    	 System.out.println("8.exit");
+    	 int choice=sc.nextInt();
+    	 
+    	 
+    	 try {
+    		 switch(choice) {
+    		 case 1:
+    			 System.out.println("enetr id"); 
+    			 String id=sc.next();
+    			 
+    			 System.out.println("enetr title");
+    			 String Title=sc.next();
+    			 
+    			 System.out.println("enetr author");
+    			 String author=sc.next();
+    			 
+    			 System.out.println("enetr category {FICTION,NONFICTION,SCIENCE,HISTORY,TECHNOLOGY}");
+    			 Category category=Category.valueOf(sc.next().toUpperCase());
+    			 
+    			 System.out.println("enetr price");
+    			 double price=sc.nextInt();
+    			 
+    			 System.out.println("enetr stock");
+    			 int stock=sc.nextInt();
+    			 
+    			 System.out.println("enetr publisher");
+    			 String publisher=sc.next();
+    			 
+    			 System.out.println("enetr stock update(yyyy-mm-dd");
+    			 LocalDate stockUpdateDate=LocalDate.parse(sc.next());
+    			 
+    			 manager.addBook(new Book(id,Title,author,category,price,stock,stockUpdateDate,publisher));
+    			 break;
+    		 case 2:
+    			 System.out.println("eneter id to update");
+    			 String stockId=sc.next();
+    			 System.out.println("eneter new stock");
+                  int newStock=sc.nextInt();
+                  manager.UpdateStock(stockId, newStock);
+    			 break;
+    		 case 3:
+    			 System.out.println("eneter category");
+    			 Category discountCategory=Category.valueOf(sc.next().toUpperCase());
+    			 System.out.println("eneter discount percentage");
+    			 double discount=sc.nextDouble();
+    			 manager.setDiscount(discountCategory, discount);
+    			 break;
+    		 case 4:
+    			 manager.removeOldStock();
+    			 break;
+    		 case 5:
+    			 manager.saveInventory();
+    			 break;
+    		 case 6:
+    			 manager.loadInventory();
+    			 break;
+    		 case 7:
+    			 manager.displayBooks();
+    			 break;
+    		 case 8:
+    			 System.out.println("exiting");
+    			 sc.close();
+    			 return;
+    		default:
+    			System.out.println("invalid choice");
+    		 }
+    	 }catch(Exception e) {
+    		 System.out.println("error" +e.getMessage());
+    	 }
+    }
+    }
+}
+
+Category.java
+public enum Category {
+  FICTION,NONFICTION,SCIENCE,HISTORY,TECHNOLOGY;
+}
+
+InventoryManager.java
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+public class InventoryManager {
+   private List <Book> books= new ArrayList<>();
+   private static final String FILE_NAME="inventory.ser";
+   //add
+   public void addBook(Book book) {
+	   books.add(book);
+	   System.out.println("book added successfully");
+   }
+   
+   //update 
+   public void UpdateStock(String id,int newStock) throws ResourceNotFoundException {
+	   for (Book book: books) {
+		   if(book.getId().equals(id)) {
+			   book.setStock(newStock);
+			   System.out.println("stock updated successfully");
+			   System.out.println("Update book" +book);
+			   return;
+		   }
+	   }
+	   throw new ResourceNotFoundException("book with id" +id +"not found");
+   }
+   
+   //set discpunt
+   public void setDiscount(Category category,double discount) {
+	   for(Book book:books) {
+		   if(book.getCategory()==category) {
+			   book.setDiscount(discount);
+			   System.out.println("discount book" +book);
+			   
+		   }
+	   }
+	   System.out.println("discount successfully done" +category);
+   }
+   
+   //remove books
+   
+   public void removeOldStock() {
+	   Iterator<Book> iterator=books.iterator();
+	   LocalDate sixMonthAgo=LocalDate.now().minusMonths(6);
+	   boolean removed=false;
+	   while(iterator.hasNext()) {
+		   Book book=iterator.next();
+		   if (book.getStock()==0 || book.getStockUpdateDate().isBefore(sixMonthAgo)) {
+		     iterator.remove();
+		     removed=true;
+		     System.out.println("removed old stock" +book);
+		   }
+   }
+	   if(!removed) {
+		   System.out.println("no old stock books found to remove");
+	   }
+	   else {
+		   System.out.println("old stock removed");
+	   }
+   
+}
+   //save inventory
+   public void saveInventory() throws IOException {
+	   try(ObjectOutputStream oos =new ObjectOutputStream(new FileOutputStream(FILE_NAME))){
+	   oos.writeObject(books);
+	   System.out.println("Inventory saved successfully");
+   }
+   }
+   
+   //LOAD
+   public void loadInventory() throws IOException, ClassNotFoundException  {
+	  try(ObjectInputStream ois =new ObjectInputStream(new FileInputStream(FILE_NAME))){
+		  books =(List<Book>)ois.readObject() ;
+		  System.out.println("Inventory loaded successfully");
+		  displayBooks();
+   }
+   }
+//display
+    public void displayBooks() {
+	   if(books.isEmpty()) {
+		   System.out.println("no book in Inventory");
+	   }
+	   else {
+		   books.forEach(System.out::println);
+	   }
+	
+   }
+  
+   
+}
+
+
